@@ -6,7 +6,7 @@ pub fn build(b: *std.Build) void {
 
     const libcore = b.addStaticLibrary(.{
         .name = "core",
-        .root_source_file = b.path("src/root.zig"),
+        .root_source_file = b.path("src/c.zig"),
         .target = target,
         .optimize = optimize,
         .link_libc = true,
