@@ -12,7 +12,9 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
         .link_libc = true,
+        .strip = true,
     });
+    libcore.no_builtin = true;
     b.installArtifact(libcore);
 
     // Tests

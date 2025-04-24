@@ -16,5 +16,8 @@ release: build
 test:
     zig build test --summary all
 
+test-c:
+    gcc src/tests/main.c dist/core.c -I includes/ -o main && ./main
+
 fmt:
     zig fmt src
