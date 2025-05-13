@@ -5,8 +5,20 @@ const builtin = @import("builtin");
 const std = @import("std");
 const math = std.math;
 
-pub inline fn doClientRequest(default: usize, request: usize, a1: usize, a2: usize, a3: usize, a4: usize, a5: usize) usize {
+pub fn black_box(comptime T: type, value: T) T {
+    asm volatile (""
+        :
+        : [val] "r" (value),
+    );
+    return value;
+}
+
+pub inline fn doClientRequest(_default: usize, request: usize, a1: usize, a2: usize, a3: usize, a4: usize, a5: usize) usize {
     const args = &[_]usize{ request, a1, a2, a3, a4, a5 };
+
+    // Ensure the compiler doesn't incorrectly optimize away the
+    // default variable if it's 0.
+    const default = black_box(usize, _default);
 
     return switch (builtin.cpu.arch) {
         .arm, .armeb, .thumb, .thumbeb => asm volatile (

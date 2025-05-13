@@ -17,7 +17,13 @@ test:
     zig build test --summary all
 
 test-c:
-    gcc src/tests/main.c dist/core.c -I includes/ -o main && ./main
+    clang -O3 src/tests/main.c dist/core.c -I includes/ -o clang-main && ./clang-main
+    valgrind ./clang-main
+
+    gcc -O3 src/tests/main.c dist/core.c -I includes/ -o gcc-main && ./gcc-main
+    valgrind ./gcc-main
+
+    rm -rf clang-main gcc-main
 
 fmt:
     zig fmt src
