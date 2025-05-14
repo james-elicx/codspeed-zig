@@ -7,15 +7,18 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-typedef uint64_t* InstrumentHooks;
+typedef uint64_t *InstrumentHooks;
 
-InstrumentHooks* instrument_hooks_init(void);
-void instrument_hooks_deinit(InstrumentHooks*);
+InstrumentHooks *instrument_hooks_init(void);
+void instrument_hooks_deinit(InstrumentHooks *);
 
-bool instrument_hooks_is_instrumented(InstrumentHooks*);
-void instrument_hooks_start_benchmark(InstrumentHooks*);
-void instrument_hooks_stop_benchmark(InstrumentHooks*);
-void instrument_hooks_current_benchmark(InstrumentHooks*, int32_t pid, const char* uri);
-void instrument_hooks_set_integration(InstrumentHooks*, const char *name, const char* version);
+bool instrument_hooks_is_instrumented(InstrumentHooks *);
+void instrument_hooks_start_benchmark(InstrumentHooks *);
+void instrument_hooks_stop_benchmark(InstrumentHooks *);
+void instrument_hooks_current_benchmark(InstrumentHooks *, int32_t pid, const char *uri);
+void instrument_hooks_set_integration(InstrumentHooks *, const char *name, const char *version);
+
+void callgrind_start_instrumentation();
+void callgrind_stop_instrumentation();
 
 #endif

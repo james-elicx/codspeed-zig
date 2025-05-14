@@ -13,10 +13,15 @@ release: build
     cp -r ./zig-out/lib dist/
     echo "size of core.c: $(cat dist/core.c | wc -l)"
 
+    # Append valgrind_wrapper.c to core.c
+    cat src/helpers/valgrind_wrapper.c >> dist/core.c
+
 test:
     zig build test --summary all
 
-test-c:
+test-valgrind:
+    rm /tmp/runner*.fifo || true
+
     clang -O3 src/tests/main.c dist/core.c -I includes/ -o clang-main && ./clang-main
     valgrind ./clang-main
 
