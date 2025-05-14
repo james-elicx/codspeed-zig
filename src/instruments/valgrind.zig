@@ -35,7 +35,7 @@ pub const ValgrindInstrument = struct {
         valgrind.callgrind_stop_instrumentation();
     }
 
-    pub inline fn current_benchmark(pid: u32, uri: [*c]const u8) void {
+    pub inline fn set_executed_benchmark(pid: u32, uri: [*c]const u8) void {
         _ = pid;
         valgrind.callgrind_dump_stats_at(uri);
     }

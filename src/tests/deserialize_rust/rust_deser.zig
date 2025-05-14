@@ -15,7 +15,7 @@ fn assert_eq(serialized: []const u8, expected_cmd: Command) !void {
 test "rust deserialization" {
     const rust = @import("serialized.zig");
 
-    try assert_eq(rust.cmd_cur_bench, Command{ .CurrentBenchmark = .{
+    try assert_eq(rust.cmd_cur_bench, Command{ .ExecutedBenchmark = .{
         .pid = 12345,
         .uri = "http://example.com/benchmark",
     } });

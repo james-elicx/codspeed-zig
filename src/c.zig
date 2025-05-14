@@ -50,10 +50,10 @@ pub export fn instrument_hooks_stop_benchmark(hooks: ?*InstrumentHooks) void {
     }
 }
 
-pub export fn instrument_hooks_current_benchmark(hooks: ?*InstrumentHooks, pid: u32, uri: [*c]const u8) void {
+pub export fn instrument_hooks_executed_benchmark(hooks: ?*InstrumentHooks, pid: u32, uri: [*c]const u8) void {
     if (hooks) |h| {
-        h.current_benchmark(pid, uri) catch |err| {
-            std.debug.print("Failed to get current benchmark: {s}\n", .{@errorName(err)});
+        h.set_executed_benchmark(pid, uri) catch |err| {
+            std.debug.print("Failed to set executed benchmark: {s}\n", .{@errorName(err)});
         };
     }
 }
@@ -72,7 +72,7 @@ test "no crash when not instrumented" {
     _ = instrument_hooks_is_instrumented(instance);
     _ = instrument_hooks_start_benchmark(instance);
     _ = instrument_hooks_stop_benchmark(instance);
-    _ = instrument_hooks_current_benchmark(instance, 0, "test");
+    _ = instrument_hooks_executed_benchmark(instance, 0, "test");
     _ = instrument_hooks_set_integration(instance, "pytest-codspeed", "1.0");
 
     instrument_hooks_deinit(instance);

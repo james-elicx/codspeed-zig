@@ -6,7 +6,7 @@ pub const RUNNER_CTL_FIFO = "/tmp/runner.ctl.fifo";
 pub const RUNNER_ACK_FIFO = "/tmp/runner.ack.fifo";
 
 pub const Command = union(enum) {
-    CurrentBenchmark: struct {
+    ExecutedBenchmark: struct {
         pid: u32,
         uri: []const u8,
     },
@@ -26,7 +26,7 @@ pub const Command = union(enum) {
                 allocator.free(data.name);
                 allocator.free(data.version);
             },
-            .CurrentBenchmark => |data| allocator.free(data.uri),
+            .ExecutedBenchmark => |data| allocator.free(data.uri),
             else => {},
         }
     }
@@ -40,7 +40,7 @@ pub const Command = union(enum) {
         _ = fmt;
         _ = options;
         switch (self) {
-            .CurrentBenchmark => |data| try writer.print("CurrentBenchmark {{ pid: {d}, uri: {s} }}", .{ data.pid, data.uri }),
+            .ExecutedBenchmark => |data| try writer.print("ExecutedBenchmark {{ pid: {d}, uri: {s} }}", .{ data.pid, data.uri }),
             .StartBenchmark => try writer.writeAll("StartBenchmark"),
             .StopBenchmark => try writer.writeAll("StopBenchmark"),
             .Ack => try writer.writeAll("Ack"),
@@ -52,8 +52,8 @@ pub const Command = union(enum) {
 
     pub fn equal(self: Command, other: Command) bool {
         return switch (self) {
-            .CurrentBenchmark => |self_data| switch (other) {
-                .CurrentBenchmark => |other_data| self_data.pid == other_data.pid and
+            .ExecutedBenchmark => |self_data| switch (other) {
+                .ExecutedBenchmark => |other_data| self_data.pid == other_data.pid and
                     std.mem.eql(u8, self_data.uri, other_data.uri),
                 else => false,
             },

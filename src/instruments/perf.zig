@@ -49,8 +49,8 @@ pub const PerfInstrument = struct {
         try self.reader.waitForAck(null);
     }
 
-    pub fn current_benchmark(self: *Self, pid: u32, uri: [*c]const u8) !void {
-        try self.writer.sendCmd(fifo.Command{ .CurrentBenchmark = .{
+    pub fn set_executed_benchmark(self: *Self, pid: u32, uri: [*c]const u8) !void {
+        try self.writer.sendCmd(fifo.Command{ .ExecutedBenchmark = .{
             .pid = pid,
             .uri = std.mem.span(uri),
         } });
@@ -131,8 +131,8 @@ test "perf integration" {
     try std.testing.expect(si_result.equal(fifo.Command{ .SetIntegration = .{ .name = "zig", .version = "0.10.0" } }));
     si_result.deinit(allocator);
 
-    const cb_result = try tester.send(PerfInstrument.current_benchmark, .{ &perf, 42, "foo" });
-    try std.testing.expect(cb_result.equal(fifo.Command{ .CurrentBenchmark = .{ .pid = 42, .uri = "foo" } }));
+    const cb_result = try tester.send(PerfInstrument.set_executed_benchmark, .{ &perf, 42, "foo" });
+    try std.testing.expect(cb_result.equal(fifo.Command{ .ExecutedBenchmark = .{ .pid = 42, .uri = "foo" } }));
     cb_result.deinit(allocator);
 
     const start_result = try tester.send(PerfInstrument.start_benchmark, .{&perf});

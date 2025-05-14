@@ -18,7 +18,7 @@
 mod shared {
     #[derive(serde::Serialize, serde::Deserialize, Debug, PartialEq)]
     pub enum Command {
-        CurrentBenchmark { pid: u32, uri: String },
+        ExecutedBenchmark { pid: u32, uri: String },
         StartBenchmark,
         StopBenchmark,
         Ack,
@@ -47,7 +47,7 @@ fn main() {
 
     example(
         "cmd_cur_bench",
-        &shared::Command::CurrentBenchmark {
+        &shared::Command::ExecutedBenchmark {
             pid: 12345,
             uri: "http://example.com/benchmark".to_string(),
         },

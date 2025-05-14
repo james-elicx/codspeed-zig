@@ -10,7 +10,7 @@ int main() {
     instrument_hooks_start_benchmark(instance);
     instrument_hooks_stop_benchmark(instance);
     instrument_hooks_set_integration(instance, "c-test", "0.1");
-    instrument_hooks_current_benchmark(instance, 42, "example_uri");
+    instrument_hooks_executed_benchmark(instance, 42, "example_uri");
 
     printf("Test finished\n");
 

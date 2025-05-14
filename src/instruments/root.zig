@@ -61,10 +61,10 @@ pub const InstrumentHooks = union(enum) {
         }
     }
 
-    pub inline fn current_benchmark(self: *Self, pid: u32, uri: [*c]const u8) !void {
+    pub inline fn set_executed_benchmark(self: *Self, pid: u32, uri: [*c]const u8) !void {
         switch (self.*) {
-            .valgrind => ValgrindInstrument.current_benchmark(pid, uri),
-            .perf => try self.perf.current_benchmark(pid, uri),
+            .valgrind => ValgrindInstrument.set_executed_benchmark(pid, uri),
+            .perf => try self.perf.set_executed_benchmark(pid, uri),
             .none => {},
         }
     }

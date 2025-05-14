@@ -15,7 +15,7 @@ void instrument_hooks_deinit(InstrumentHooks *);
 bool instrument_hooks_is_instrumented(InstrumentHooks *);
 void instrument_hooks_start_benchmark(InstrumentHooks *);
 void instrument_hooks_stop_benchmark(InstrumentHooks *);
-void instrument_hooks_current_benchmark(InstrumentHooks *, int32_t pid, const char *uri);
+void instrument_hooks_executed_benchmark(InstrumentHooks *, int32_t pid, const char *uri);
 void instrument_hooks_set_integration(InstrumentHooks *, const char *name, const char *version);
 
 void callgrind_start_instrumentation();
