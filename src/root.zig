@@ -3,4 +3,5 @@ test "run all tests" {
     _ = @import("bincode.zig");
     _ = @import("fifo.zig");
     _ = @import("c.zig");
+    _ = @import("utils.zig");
 }

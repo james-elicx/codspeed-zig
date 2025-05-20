@@ -64,7 +64,8 @@ pub const UnixPipe = struct {
                 }
 
                 const cmd = self.recvCmd() catch {
-                    std.time.sleep(std.time.ns_per_ms * 10);
+                    const utils = @import("utils.zig");
+                    utils.sleep(std.time.ns_per_ms * 10);
                     continue;
                 };
 
