@@ -7,13 +7,11 @@ pub const panic = if (builtin.is_test) std.debug.FullPanic(std.debug.defaultPani
 const allocator = if (builtin.is_test) std.testing.allocator else std.heap.c_allocator;
 
 pub export fn instrument_hooks_init() ?*InstrumentHooks {
-    const hooks = allocator.create(InstrumentHooks) catch |err| {
-        std.debug.print("Failed to allocate InstrumentHooks: {s}\n", .{@errorName(err)});
+    const hooks = allocator.create(InstrumentHooks) catch {
         return null;
     };
 
-    hooks.* = InstrumentHooks.init(allocator) catch |err| {
-        std.debug.print("Failed to initialize InstrumentHooks: {s}\n", .{@errorName(err)});
+    hooks.* = InstrumentHooks.init(allocator) catch {
         allocator.destroy(hooks);
         return null;
     };
@@ -34,46 +32,49 @@ pub export fn instrument_hooks_is_instrumented(hooks: ?*InstrumentHooks) bool {
     return false;
 }
 
-pub export fn instrument_hooks_start_benchmark(hooks: ?*InstrumentHooks) void {
+pub export fn instrument_hooks_start_benchmark(hooks: ?*InstrumentHooks) u8 {
     if (hooks) |h| {
-        h.start_benchmark() catch |err| {
-            std.debug.print("Failed to start benchmark: {s}\n", .{@errorName(err)});
+        h.start_benchmark() catch {
+            return 1;
         };
     }
+    return 0;
 }
 
-pub export fn instrument_hooks_stop_benchmark(hooks: ?*InstrumentHooks) void {
+pub export fn instrument_hooks_stop_benchmark(hooks: ?*InstrumentHooks) u8 {
     if (hooks) |h| {
-        h.stop_benchmark() catch |err| {
-            std.debug.print("Failed to stop benchmark: {s}\n", .{@errorName(err)});
+        h.stop_benchmark() catch {
+            return 1;
         };
     }
+    return 0;
 }
 
-pub export fn instrument_hooks_executed_benchmark(hooks: ?*InstrumentHooks, pid: u32, uri: [*c]const u8) void {
+pub export fn instrument_hooks_executed_benchmark(hooks: ?*InstrumentHooks, pid: u32, uri: [*c]const u8) u8 {
     if (hooks) |h| {
-        h.set_executed_benchmark(pid, uri) catch |err| {
-            std.debug.print("Failed to set executed benchmark: {s}\n", .{@errorName(err)});
+        h.set_executed_benchmark(pid, uri) catch {
+            return 1;
         };
     }
+    return 0;
 }
 
-pub export fn instrument_hooks_set_integration(hooks: ?*InstrumentHooks, name: [*c]const u8, version: [*c]const u8) void {
+pub export fn instrument_hooks_set_integration(hooks: ?*InstrumentHooks, name: [*c]const u8, version: [*c]const u8) u8 {
     if (hooks) |h| {
-        h.set_integration(name, version) catch |err| {
-            std.debug.print("Failed to set integration: {s}\n", .{@errorName(err)});
+        h.set_integration(name, version) catch {
+            return 1;
         };
     }
+    return 0;
 }
 
 test "no crash when not instrumented" {
     const instance = instrument_hooks_init();
+    defer instrument_hooks_deinit(instance);
 
     _ = instrument_hooks_is_instrumented(instance);
-    _ = instrument_hooks_start_benchmark(instance);
-    _ = instrument_hooks_stop_benchmark(instance);
-    _ = instrument_hooks_executed_benchmark(instance, 0, "test");
-    _ = instrument_hooks_set_integration(instance, "pytest-codspeed", "1.0");
-
-    instrument_hooks_deinit(instance);
+    try std.testing.expectEqual(0, instrument_hooks_start_benchmark(instance));
+    try std.testing.expectEqual(0, instrument_hooks_stop_benchmark(instance));
+    try std.testing.expectEqual(0, instrument_hooks_executed_benchmark(instance, 0, "test"));
+    try std.testing.expectEqual(0, instrument_hooks_set_integration(instance, "pytest-codspeed", "1.0"));
 }
