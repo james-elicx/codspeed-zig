@@ -8,13 +8,8 @@ build:
 
 release: build
     test -f ./zig-out/lib/zig.h || cp "$(zig env | jq -r .lib_dir)/zig.h" ./includes/zig.h
-
-    rm -rf dist/
-    cp -r ./zig-out/lib dist/
-    echo "size of core.c: $(cat dist/core.c | wc -l)"
-
-    # Append valgrind_wrapper.c to core.c
-    cat src/helpers/valgrind_wrapper.c >> dist/core.c
+    mkdir -p dist/
+    python3 scripts/release.py
 
 test:
     zig build test --summary all

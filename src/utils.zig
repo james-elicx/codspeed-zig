@@ -13,7 +13,7 @@ pub fn sleep(nanoseconds: u64) void {
 
     var req: c.struct_timespec = .{
         .tv_sec = std.math.cast(c.time_t, s) orelse std.math.maxInt(c.time_t),
-        .tv_nsec = std.math.cast(c.time_t, ns) orelse std.math.maxInt(c.time_t),
+        .tv_nsec = std.math.cast(c_long, ns) orelse std.math.maxInt(c_long),
     };
     var rem: c.struct_timespec = undefined;
 
