@@ -1,10 +1,15 @@
 clean:
     rm -rf zig-out/
     rm -rf .zig-cache
-    rm -rf dist/
+    rm -rf dist/core.c
+    rm -rf example/build
 
 build:
     zig build
+
+build-example:
+    cd example && mkdir -p build && cd build && cmake .. && make -j
+    bazelisk build //:example
 
 release: build
     test -f ./zig-out/lib/zig.h || cp "$(zig env | jq -r .lib_dir)/zig.h" ./includes/zig.h
@@ -17,10 +22,10 @@ test:
 test-valgrind:
     rm /tmp/runner*.fifo || true
 
-    clang -O3 src/tests/main.c dist/core.c -I includes/ -o clang-main && ./clang-main
+    clang -O3 example/main.c dist/core.c -I includes/ -o clang-main && ./clang-main
     valgrind ./clang-main
 
-    gcc -O3 src/tests/main.c dist/core.c -I includes/ -o gcc-main && ./gcc-main
+    gcc -O3 example/main.c dist/core.c -I includes/ -o gcc-main && ./gcc-main
     valgrind ./gcc-main
 
     rm -rf clang-main gcc-main

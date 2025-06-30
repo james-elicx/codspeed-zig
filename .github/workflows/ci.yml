@@ -45,6 +45,95 @@ jobs:
       - name: Build
         run: zig build
 
+  test-build-cmake:
+    strategy:
+      matrix:
+        include:
+          - name: Linux GCC
+            os: ubuntu-latest
+            compiler: gcc
+
+          - name: Linux Clang
+            os: ubuntu-latest
+            compiler: clang
+
+          - name: Windows MSVC
+            os: windows-latest
+            compiler: cl
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mlugg/setup-zig@v2
+      - uses: extractions/setup-just@v3
+
+      - name: Cache build
+        uses: actions/cache@v4
+        with:
+          path: example/build
+          key: ${{ runner.os }}-build-${{ hashFiles('**/CMakeLists.txt') }}
+
+      - name: "Enable MSVC command prompt"
+        if: matrix.os == 'windows-latest'
+        uses: ilammy/msvc-dev-cmd@v1
+
+      - name: "Install cmake"
+        uses: lukka/get-cmake@latest
+
+      - name: "Build debug mode"
+        shell: bash
+        run: |
+          cd example
+          mkdir -p out
+          cd out
+          cmake .. -DCMAKE_C_COMPILER=${{ matrix.compiler }} -DCMAKE_BUILD_TYPE=Debug
+          cmake --build . --target example
+
+      - name: "Run example (Windows)"
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          cd example/out/Debug
+          ./example.exe
+
+      - name: "Run example (Unix)"
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          cd example/out
+          ./example
+
+  test-build-bazel:
+    strategy:
+      matrix:
+        include:
+          - name: Linux
+            os: ubuntu-latest
+          - name: Windows
+            os: windows-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Bazel
+        uses: bazel-contrib/setup-bazel@0.14.0
+        with:
+          # Avoid downloading Bazel every time.
+          bazelisk-cache: true
+          # Store build cache per workflow.
+          disk-cache: ${{ github.workflow }}
+          # Share repository cache between workflows.
+          repository-cache: true
+
+      - name: Build benchmarks
+        working-directory: example
+        run: |
+          bazel build //:example
+
+      - name: Run benchmarks
+        working-directory: example
+        run: |
+          bazel run //:example
+
   check:
     runs-on: ubuntu-latest
     if: always()
@@ -52,6 +141,8 @@ jobs:
       - lint
       - tests
       - build
+      - test-build-cmake
+      - test-build-bazel
     steps:
       - uses: re-actors/alls-green@release/v1
         with:

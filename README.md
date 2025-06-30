@@ -15,12 +15,7 @@ Zig library to control instrumentations via IPC.
 
 ## How to add new integration?
 
-Create a new release of this library:
-```shell
-just release
-```
-
-You can then include build and link to the files in `dist/`. Use the `dist/core.h` header to automatically generate bindings, or create them manually.
+This library is intended to be used as a C library. The main source file is in `dist/core.c` and the headers are in `includes/`. See `examples/main.c` for an example on how to use it.
 
 To test if it worked, call `is_instrumented` which should return `false` when running without Codspeed. To run with Codspeed, execute the following:
 ```
