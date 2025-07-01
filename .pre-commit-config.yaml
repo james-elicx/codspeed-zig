@@ -1,4 +1,4 @@
-exclude: ^includes/
+exclude: ^(includes/(valgrind|callgrind|zig)\.h|dist/core\.c)
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v2.4.0
@@ -13,3 +13,9 @@ repos:
       - id: zig-fmt
       - id: zig-build
       - id: zig-build-test
+
+  - repo: https://github.com/cpp-linter/cpp-linter-hooks
+    rev: v0.6.1
+    hooks:
+      - id: clang-format
+        files: \.(c|h)$
