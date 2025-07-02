@@ -1,10 +1,16 @@
 const instruments = @import("./instruments/root.zig");
 const InstrumentHooks = instruments.InstrumentHooks;
 const builtin = @import("builtin");
+const features = @import("./features.zig");
 const std = @import("std");
 
 pub const panic = if (builtin.is_test) std.debug.FullPanic(std.debug.defaultPanic) else std.debug.no_panic;
 const allocator = if (builtin.is_test) std.testing.allocator else std.heap.c_allocator;
+
+pub export fn instrument_hooks_set_feature(feature: u64, enabled: bool) void {
+    const feature_enum = @as(features.Feature, @enumFromInt(feature));
+    features.set_feature(feature_enum, enabled);
+}
 
 pub export fn instrument_hooks_init() ?*InstrumentHooks {
     const hooks = allocator.create(InstrumentHooks) catch {
@@ -73,6 +79,7 @@ test "no crash when not instrumented" {
     defer instrument_hooks_deinit(instance);
 
     _ = instrument_hooks_is_instrumented(instance);
+    _ = instrument_hooks_set_feature(0, true);
     try std.testing.expectEqual(0, instrument_hooks_start_benchmark(instance));
     try std.testing.expectEqual(0, instrument_hooks_stop_benchmark(instance));
     try std.testing.expectEqual(0, instrument_hooks_executed_benchmark(instance, 0, "test"));

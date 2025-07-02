@@ -23,4 +23,13 @@ int8_t instrument_hooks_set_integration(InstrumentHooks *, const char *name,
 int8_t callgrind_start_instrumentation();
 int8_t callgrind_stop_instrumentation();
 
+// Feature flags for instrument hooks
+
+typedef enum {
+  FEATURE_DISABLE_CALLGRIND_MARKERS = 0,
+} instrument_hooks_feature_t;
+
+void instrument_hooks_set_feature(instrument_hooks_feature_t feature,
+                                  bool enabled);
+
 #endif

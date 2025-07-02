@@ -1,5 +1,6 @@
 const std = @import("std");
 const valgrind = @import("../helpers/valgrind.zig");
+const features = @import("../features.zig");
 
 pub const ValgrindInstrument = struct {
     allocator: std.mem.Allocator,
@@ -27,12 +28,16 @@ pub const ValgrindInstrument = struct {
     }
 
     pub inline fn start_benchmark() void {
-        valgrind.callgrind_zero_stats();
-        valgrind.callgrind_start_instrumentation();
+        if (!features.is_feature_enabled(.disable_callgrind_markers)) {
+            valgrind.callgrind_zero_stats();
+            valgrind.callgrind_start_instrumentation();
+        }
     }
 
     pub inline fn stop_benchmark() void {
-        valgrind.callgrind_stop_instrumentation();
+        if (!features.is_feature_enabled(.disable_callgrind_markers)) {
+            valgrind.callgrind_stop_instrumentation();
+        }
     }
 
     pub inline fn set_executed_benchmark(pid: u32, uri: [*c]const u8) void {

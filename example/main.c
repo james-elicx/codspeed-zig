@@ -16,6 +16,8 @@ void example_function() {
 }
 
 int main() {
+  instrument_hooks_set_feature(FEATURE_DISABLE_CALLGRIND_MARKERS, true);
+
   InstrumentHooks *hooks = instrument_hooks_init();
   if (!hooks) {
     printf("Failed to initialize instrument hooks\n");
