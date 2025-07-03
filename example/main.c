@@ -33,7 +33,7 @@ int main() {
   instrument_hooks_set_integration(hooks, "example", "1.0.0");
 
   printf("Starting benchmark...\n");
-  if (instrument_hooks_start_benchmark(hooks) != 0) {
+  if (instrument_hooks_start_benchmark_inline(hooks) != 0) {
     printf("Failed to start benchmark\n");
     instrument_hooks_deinit(hooks);
     return 1;
@@ -43,7 +43,7 @@ int main() {
     example_function();
   }
 
-  if (instrument_hooks_stop_benchmark(hooks) != 0) {
+  if (instrument_hooks_stop_benchmark_inline(hooks) != 0) {
     printf("Failed to stop benchmark\n");
     instrument_hooks_deinit(hooks);
     return 1;
