@@ -19,6 +19,12 @@ uint8_t instrument_hooks_start_benchmark(InstrumentHooks* hooks) { return 0; }
 
 uint8_t instrument_hooks_stop_benchmark(InstrumentHooks* hooks) { return 0; }
 
+uint8_t instrument_hooks_set_executed_benchmark(InstrumentHooks* hooks,
+                                                uint32_t pid, const char* uri) {
+  return 0;
+}
+
+// Deprecated: use instrument_hooks_set_executed_benchmark instead
 uint8_t instrument_hooks_executed_benchmark(InstrumentHooks* hooks,
                                             uint32_t pid, const char* uri) {
   return 0;

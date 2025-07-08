@@ -25,7 +25,7 @@ codspeed run -- <your_cmd>
 To make sure your integration is fully working, you have to implement all these hooks:
 - start_benchmark: Call this when the benchmark starts, to start measuring the performance.
 - stop_benchmark: Stop measuring the performance after the benchmark stopped.
-- executed_benchmark: Provide metadata about which benchmark was executed.
+- set_executed_benchmark: Provide metadata about which benchmark was executed.
 - set_integration: Provide metadata about the integration.
 
 ## Run tests

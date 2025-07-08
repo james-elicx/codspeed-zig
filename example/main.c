@@ -50,8 +50,8 @@ int main() {
   }
 
   int32_t pid = getpid();
-  if (instrument_hooks_executed_benchmark(hooks, pid, "example_benchmark") !=
-      0) {
+  if (instrument_hooks_set_executed_benchmark(hooks, pid,
+                                              "example_benchmark") != 0) {
     printf("Failed to report benchmark execution\n");
     instrument_hooks_deinit(hooks);
     return 1;

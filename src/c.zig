@@ -56,13 +56,18 @@ pub export fn instrument_hooks_stop_benchmark(hooks: ?*InstrumentHooks) u8 {
     return 0;
 }
 
-pub export fn instrument_hooks_executed_benchmark(hooks: ?*InstrumentHooks, pid: u32, uri: [*c]const u8) u8 {
+pub export fn instrument_hooks_set_executed_benchmark(hooks: ?*InstrumentHooks, pid: u32, uri: [*c]const u8) u8 {
     if (hooks) |h| {
         h.set_executed_benchmark(pid, uri) catch {
             return 1;
         };
     }
     return 0;
+}
+
+// Deprecated: use instrument_hooks_set_executed_benchmark instead
+pub export fn instrument_hooks_executed_benchmark(hooks: ?*InstrumentHooks, pid: u32, uri: [*c]const u8) u8 {
+    return instrument_hooks_set_executed_benchmark(hooks, pid, uri);
 }
 
 pub export fn instrument_hooks_set_integration(hooks: ?*InstrumentHooks, name: [*c]const u8, version: [*c]const u8) u8 {
