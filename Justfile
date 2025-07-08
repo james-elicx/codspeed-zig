@@ -9,7 +9,7 @@ build:
 
 build-example:
     cd example && mkdir -p build && cd build && cmake .. && make -j
-    bazelisk build //:example
+    cd example && bazelisk build //:example
 
 release: build
     test -f ./zig-out/lib/zig.h || cp "$(zig env | jq -r .lib_dir)/zig.h" ./includes/zig.h
