@@ -7,6 +7,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #ifndef _WIN32
 #include "callgrind.h"
 #include "valgrind.h"
@@ -65,5 +69,9 @@ static inline int8_t instrument_hooks_stop_benchmark_inline(
   CALLGRIND_STOP_INSTRUMENTATION;
   return instrument_hooks_stop_benchmark(instance);
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
