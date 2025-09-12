@@ -1,12 +1,11 @@
-const bincode = @import("bincode.zig");
 const std = @import("std");
-const shared = @import("shared.zig");
-
 const fs = std.fs;
 const os = std.os;
 const mem = std.mem;
 const Allocator = std.mem.Allocator;
-const Path = []const u8;
+
+const bincode = @import("bincode.zig");
+const shared = @import("shared.zig");
 pub const Command = shared.Command;
 
 extern "c" fn mkfifo(path: [*:0]const u8, mode: c_uint) c_int;
@@ -111,10 +110,10 @@ pub const UnixPipe = struct {
         }
 
         pub fn sendCmd(self: *Writer, cmd: Command) !void {
-            var buffer = std.ArrayList(u8).init(self.allocator);
-            defer buffer.deinit();
+            var buffer = try std.ArrayList(u8).initCapacity(self.allocator, 0);
+            defer buffer.deinit(self.allocator);
 
-            try bincode.serialize(buffer.writer(), cmd);
+            try bincode.serialize(buffer.writer(self.allocator), cmd);
 
             const bytes = buffer.items;
             try self.file.writeAll(std.mem.asBytes(&@as(u32, @intCast(bytes.len))));

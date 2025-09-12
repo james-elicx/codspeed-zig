@@ -1,39 +1,79 @@
-<div align="center">
-<h1>instrument-hooks</h1>
+<p align="center">
+  <h3 align="center">Codspeed - Zig Integration</h3>
+</p>
 
-[![CI](https://github.com/CodSpeedHQ/instrument-hooks/actions/workflows/ci.yml/badge.svg)](https://github.com/CodSpeedHQ/instrument-hooks/actions/workflows/ci.yml)
-[![Discord](https://img.shields.io/badge/chat%20on-discord-7289da.svg)](https://discord.com/invite/MxpaCfKSqF)
+---
 
-Zig library to control instrumentations via IPC.
+This library is a fork of Codspeed's instrumentation hooks library and adapted to be used as a Zig integration for the platform.
 
-</div>
+## Installation
 
-## Requirements
+Add the library to your Zig project.
 
-- **Zig**: 0.14
-- [**Just**](https://github.com/casey/just) (optional): To easily run the build, formatter or tests
-
-## How to add new integration?
-
-This library is intended to be used as a C library. The main source file is in `dist/core.c` and the headers are in `includes/`. See `examples/main.c` for an example on how to use it.
-
-To test if it worked, call `is_instrumented` which should return `false` when running without Codspeed. To run with Codspeed, execute the following:
-```
-codspeed run -- <your_cmd>
+```bash
+zig fetch --save git+https://github.com/james-elicx/codspeed-zig
 ```
 
-To make sure your integration is fully working, you have to implement all these hooks:
-- start_benchmark: Call this when the benchmark starts, to start measuring the performance.
-- stop_benchmark: Stop measuring the performance after the benchmark stopped.
-- set_executed_benchmark: Provide metadata about which benchmark was executed.
-- set_integration: Provide metadata about the integration.
+Then, in your `build.zig`, add the library to your exe or lib target.
 
-## Run tests
+```zig
+benchmark_exe.root_module.addImport(
+    "codspeed",
+    b.dependency("codspeed", .{ .target = target, .optimize = optimize }).module("codspeed"),
+);
+```
 
+## Usage
+
+```zig
+const Codspeed = @import("codspeed");
+
+pub fn main() !void {
+    const alloc = std.heap.c_allocator; // or std.heap.page_allocator
+
+    const codspeed = Codspeed.init(alloc, "src/benchmarks.zig");
+    defer codspeed.deinit();
+
+    try codspeed.bench("benchmark_name", benchmarkThisCode);
+    try codspeed.bench("benchmark_name_2", benchmarkOtherCode);
+}
+
+fn benchmarkThisCode() void {
+    // Code to benchmark here
+}
+
+fn benchmarkOtherCode() void {
+    // Other code to benchmark here
+}
 ```
-zig build test --summary all
+
+## Advanced Usage
+
+You can manually start and stop the instrumentation around a code block for more granular control.
+
+```zig
+const Codspeed = @import("codspeed");
+
+pub fn main() !void {
+    const alloc = std.heap.c_allocator; // or std.heap.page_allocator
+
+    const codspeed = Codspeed.init(alloc, "src/benchmarks.zig");
+    defer codspeed.deinit();
+
+    try codspeed.start("benchmark_name");
+
+    // Code to benchmark here
+    // ...
+
+    try codspeed.stop("benchmark_name");
+}
 ```
-or
-```
-just test
-```
+
+## Recommendations
+
+- Use `std.heap.c_allocator` for benchmarks. It will provide more stable and consistent results.
+- Avoid benchmarking logic that involves system calls. They cannot be reliably instrumented and will often be excluded in Codspeed's dashboard. For instance, do file I/O operations outside of the benchmarked code.
+
+## Known Issues
+
+The process ID cannot be fetched using `std.os.linux.getpid()` for the "perf" instrument as it appears to result in an `invalid system call` error. The valgrind instrument works fine.

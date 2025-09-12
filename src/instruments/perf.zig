@@ -1,4 +1,5 @@
 const std = @import("std");
+
 const fifo = @import("../fifo.zig");
 const shared = @import("../shared.zig");
 
@@ -49,18 +50,18 @@ pub const PerfInstrument = struct {
         try self.reader.waitForAck(null);
     }
 
-    pub fn set_executed_benchmark(self: *Self, pid: u32, uri: [*c]const u8) !void {
+    pub fn set_executed_benchmark(self: *Self, pid: u32, uri: []const u8) !void {
         try self.writer.sendCmd(fifo.Command{ .ExecutedBenchmark = .{
             .pid = pid,
-            .uri = std.mem.span(uri),
+            .uri = uri,
         } });
         try self.reader.waitForAck(null);
     }
 
-    pub fn set_integration(self: *Self, name: [*c]const u8, version: [*c]const u8) !void {
+    pub fn set_integration(self: *Self, name: []const u8, version: []const u8) !void {
         try self.writer.sendCmd(fifo.Command{ .SetIntegration = .{
-            .name = std.mem.span(name),
-            .version = std.mem.span(version),
+            .name = name,
+            .version = version,
         } });
         try self.reader.waitForAck(null);
     }

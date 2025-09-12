@@ -1,18 +1,19 @@
-const instruments = @import("./instruments/root.zig");
-const InstrumentHooks = instruments.InstrumentHooks;
-const builtin = @import("builtin");
-const features = @import("./features.zig");
 const std = @import("std");
+const builtin = @import("builtin");
+
+const features = @import("./features.zig");
+const instruments = @import("./instruments/root.zig");
+pub const InstrumentHooks = instruments.InstrumentHooks;
 
 pub const panic = if (builtin.is_test) std.debug.FullPanic(std.debug.defaultPanic) else std.debug.no_panic;
 const allocator = if (builtin.is_test) std.testing.allocator else std.heap.c_allocator;
 
-pub export fn instrument_hooks_set_feature(feature: u64, enabled: bool) void {
+pub fn instrument_hooks_set_feature(feature: u64, enabled: bool) void {
     const feature_enum = @as(features.Feature, @enumFromInt(feature));
     features.set_feature(feature_enum, enabled);
 }
 
-pub export fn instrument_hooks_init() ?*InstrumentHooks {
+pub fn instrument_hooks_init() ?*InstrumentHooks {
     const hooks = allocator.create(InstrumentHooks) catch {
         return null;
     };
@@ -24,21 +25,21 @@ pub export fn instrument_hooks_init() ?*InstrumentHooks {
     return hooks;
 }
 
-pub export fn instrument_hooks_deinit(hooks: ?*InstrumentHooks) void {
+pub fn instrument_hooks_deinit(hooks: ?*InstrumentHooks) void {
     if (hooks) |h| {
         h.deinit();
         allocator.destroy(h);
     }
 }
 
-pub export fn instrument_hooks_is_instrumented(hooks: ?*InstrumentHooks) bool {
+pub fn instrument_hooks_is_instrumented(hooks: ?*InstrumentHooks) bool {
     if (hooks) |h| {
         return h.is_instrumented();
     }
     return false;
 }
 
-pub export fn instrument_hooks_start_benchmark(hooks: ?*InstrumentHooks) u8 {
+pub fn instrument_hooks_start_benchmark(hooks: ?*InstrumentHooks) u8 {
     if (hooks) |h| {
         h.start_benchmark() catch {
             return 1;
@@ -47,7 +48,7 @@ pub export fn instrument_hooks_start_benchmark(hooks: ?*InstrumentHooks) u8 {
     return 0;
 }
 
-pub export fn instrument_hooks_stop_benchmark(hooks: ?*InstrumentHooks) u8 {
+pub fn instrument_hooks_stop_benchmark(hooks: ?*InstrumentHooks) u8 {
     if (hooks) |h| {
         h.stop_benchmark() catch {
             return 1;
@@ -56,7 +57,7 @@ pub export fn instrument_hooks_stop_benchmark(hooks: ?*InstrumentHooks) u8 {
     return 0;
 }
 
-pub export fn instrument_hooks_set_executed_benchmark(hooks: ?*InstrumentHooks, pid: u32, uri: [*c]const u8) u8 {
+pub fn instrument_hooks_set_executed_benchmark(hooks: ?*InstrumentHooks, pid: u32, uri: []const u8) u8 {
     if (hooks) |h| {
         h.set_executed_benchmark(pid, uri) catch {
             return 1;
@@ -66,11 +67,11 @@ pub export fn instrument_hooks_set_executed_benchmark(hooks: ?*InstrumentHooks, 
 }
 
 // Deprecated: use instrument_hooks_set_executed_benchmark instead
-pub export fn instrument_hooks_executed_benchmark(hooks: ?*InstrumentHooks, pid: u32, uri: [*c]const u8) u8 {
+pub fn instrument_hooks_executed_benchmark(hooks: ?*InstrumentHooks, pid: u32, uri: []const u8) u8 {
     return instrument_hooks_set_executed_benchmark(hooks, pid, uri);
 }
 
-pub export fn instrument_hooks_set_integration(hooks: ?*InstrumentHooks, name: [*c]const u8, version: [*c]const u8) u8 {
+pub fn instrument_hooks_set_integration(hooks: ?*InstrumentHooks, name: []const u8, version: []const u8) u8 {
     if (hooks) |h| {
         h.set_integration(name, version) catch {
             return 1;

@@ -1,5 +1,6 @@
 const std = @import("std");
 const builtin = @import("builtin");
+
 const perf = @import("perf.zig");
 const valgrind = @import("valgrind.zig");
 const ValgrindInstrument = valgrind.ValgrindInstrument;
@@ -61,15 +62,15 @@ pub const InstrumentHooks = union(enum) {
         }
     }
 
-    pub inline fn set_executed_benchmark(self: *Self, pid: u32, uri: [*c]const u8) !void {
+    pub inline fn set_executed_benchmark(self: *Self, pid: u32, uri: []const u8) !void {
         switch (self.*) {
-            .valgrind => ValgrindInstrument.set_executed_benchmark(pid, uri),
+            .valgrind => try self.valgrind.set_executed_benchmark(pid, uri),
             .perf => try self.perf.set_executed_benchmark(pid, uri),
             .none => {},
         }
     }
 
-    pub inline fn set_integration(self: *Self, name: [*c]const u8, version: [*c]const u8) !void {
+    pub inline fn set_integration(self: *Self, name: []const u8, version: []const u8) !void {
         switch (self.*) {
             .valgrind => try self.valgrind.set_integration(name, version),
             .perf => try self.perf.set_integration(name, version),

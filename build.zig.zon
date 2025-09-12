@@ -1,8 +1,8 @@
 .{
-    .name = .instrument_hooks,
-    .fingerprint = 0xd871865a9799ec8e,
+    .name = .codspeed,
+    .fingerprint = 0x1cd9009afc156f2a,
     .version = "0.0.1",
-    .minimum_zig_version = "0.14.0",
+    .minimum_zig_version = "0.15.1",
     .dependencies = .{},
     .paths = .{
         "build.zig",
